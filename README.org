@@ -1,0 +1,4 @@
+#+TITLE: Knight Owl
+#+AUTHOR: Elliot Penson
+
+A chess engine in lisp
