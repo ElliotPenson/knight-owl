@@ -1,7 +1,7 @@
 ;;;; chess.lisp
 ;;;; Author: Elliot Penson
 
-(in-package :knight-owl)
+;(in-package :knight-owl)
 
 (defconstant +number-of-files+ 8)
 
@@ -28,11 +28,11 @@
     board))
 
 (defun get-square (board file rank)
-  "Accesses a chess board x/y location"
+  "Accesses a chessboard x/y location"
   (aref board rank file))
 
 (defun (setf get-square) (value board file rank)
-  "Sets a chess board x/y location"
+  "Sets a chessboard x/y location"
   (setf (aref board rank file) value))
 
 (defun file->index (file-char)
@@ -51,3 +51,30 @@
   "Converts an algebraic chess notation rank into a y-position"
   (- +number-of-ranks+
      (digit-char-p rank-char)))
+
+(defun piece-symbol->unicode (symbol)
+  "Converts a symbol piece name (e.g. 'w-r) into a unicode string."
+  (case symbol
+    (b-p #\BLACK_CHESS_PAWN)
+    (b-r #\BLACK_CHESS_ROOK)
+    (b-n #\BLACK_CHESS_KNIGHT)
+    (b-b #\BLACK_CHESS_BISHOP)
+    (b-q #\BLACK_CHESS_QUEEN)
+    (b-k #\BLACK_CHESS_KING)
+    (w-p #\WHITE_CHESS_PAWN)
+    (w-r #\WHITE_CHESS_ROOK)
+    (w-n #\WHITE_CHESS_KNIGHT)
+    (w-b #\WHITE_CHESS_BISHOP)
+    (w-q #\WHITE_CHESS_QUEEN)
+    (w-k #\WHITE_CHESS_KING)
+    (otherwise #\LOW_LINE)))
+
+(defun print-board (board &key (stream t))
+  "Write a 2D chessboard array to a stream in a pretty fashion"
+  (dotimes (rank +number-of-ranks+)
+    (format stream "~a " (- +number-of-ranks+ rank))
+    (dotimes (file +number-of-files+)
+      (let ((piece (get-square board file rank)))
+        (format stream "|~a|" (piece-symbol->unicode piece))))
+    (fresh-line))
+  (format stream " ~{  ~a~}~%" '("A" "B" "C" "D" "E" "F" "G" "H")))
