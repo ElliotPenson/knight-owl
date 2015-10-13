@@ -34,3 +34,20 @@
 (defun (setf get-square) (value board file rank)
   "Sets a chess board x/y location"
   (setf (aref board rank file) value))
+
+(defun file->index (file-char)
+  "Converts an algebraic chess notation file into an x-position"
+  (cdr (assoc file-char
+              '((#\a . 0)
+                (#\b . 1)
+                (#\c . 2)
+                (#\d . 3)
+                (#\e . 4)
+                (#\f . 5)
+                (#\g . 6)
+                (#\h . 7)))))
+
+(defun rank->index (rank-char)
+  "Converts an algebraic chess notation rank into a y-position"
+  (- +number-of-ranks+
+     (digit-char-p rank-char)))
