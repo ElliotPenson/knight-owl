@@ -7,7 +7,7 @@
 
 (defconstant +number-of-ranks+ 8)
 
-(defconstant +initial-board+
+(defparameter *initial-board*
   #2A((b-r b-n b-b b-q b-k b-b b-n b-r)
       (b-p b-p b-p b-p b-p b-p b-p b-p)
       (nil nil nil nil nil nil nil nil)
@@ -24,7 +24,7 @@
                                  +number-of-ranks+))))
     (dotimes (index (array-total-size board))
       (setf (row-major-aref board index)
-            (row-major-aref +initial-board+ index)))
+            (row-major-aref *initial-board* index)))
     board))
 
 (defun get-square (board file rank)
