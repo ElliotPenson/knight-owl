@@ -1,7 +1,7 @@
 ;;;; chess.lisp
 ;;;; Author: Elliot Penson
 
-;(in-package :knight-owl)
+(in-package :knight-owl)
 
 (defconstant +number-of-files+ 8)
 
