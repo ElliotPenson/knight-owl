@@ -19,6 +19,16 @@
              (read-to '(#\")))
             (t (read-to +whitespace-chars+))))))
 
+(defun remove-comment (stream)
+  "Clears a line in the stream if it begins with a semicolon or a section of
+   text if it's surrounded with curly brackets"
+  (let* ((peek (peek-char t stream nil))
+         (close-char (ecase peek
+                       (#\; #\newline)
+                       (#\{ #\}))))
+    (loop for char = (read-char stream nil)
+       until (char= char close-char))))
+
 (defun tag-parse (stream)
   "Converts PGN tag pairs into an alist"
   (loop for peek = (peek-char t stream nil)
@@ -30,14 +40,13 @@
 
 (defun movetext-parse (stream)
   "Reads moves in algebraic notation into a list"
-  ;; Note: doesn't handle {} comments
   (loop for peek = (peek-char t stream nil)
      until (or (null peek)       ; eof
                (char= peek #\[)) ; tag (new game)
-     if (char= peek #\;)
-     do (read-line stream nil)
-     else if (digit-char-p peek)
-     do (next-token stream) ; skip numbers
+     if (member peek '(#\; #\{)) ; comment
+     do (remove-comment stream)
+     else if (digit-char-p peek) ; move number
+     do (next-token stream)
      else collect (next-token stream)))
 
 (defun pgn-parse (stream)
