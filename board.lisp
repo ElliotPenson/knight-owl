@@ -1,4 +1,4 @@
-;;;; chess.lisp
+;;;; board.lisp
 ;;;; Author: Elliot Penson
 
 (in-package :knight-owl)
