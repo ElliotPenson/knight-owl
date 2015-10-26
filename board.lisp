@@ -35,6 +35,36 @@
   "Sets a chessboard x/y location"
   (setf (aref board rank file) value))
 
+(defun in-board-p (file rank)
+  "Determines if the given position is within the bounds of a chess board"
+  (and (not (minusp file))
+       (not (minusp rank))
+       (< file +number-of-files+)
+       (< rank +number-of-ranks+)))
+
+(defun enclosed-by (start end)
+  "Produces a list of integers. Both start and end are exclusive"
+  (let ((advance-fn (if (< start end) #'1+ #'1-)))
+    (unless (= (funcall advance-fn start) end)
+      (cons (funcall advance-fn start)
+            (enclosed-by (funcall advance-fn start) end)))))
+
+(defun pieces-between-p (board file1 rank1 file2 rank2)
+  "Decides if there's a clear path from one position to the next"
+  (flet ((takenp (file rank)
+           (get-square board file rank)))
+    (cond ((= (abs (- file1 file2)) ; diagonal
+              (abs (- rank1 rank2)))
+           (loop for file in (enclosed-by file1 file2)
+              for rank in (enclosed-by rank1 rank2)
+              thereis (takenp file rank)))
+          ((= file1 file2)          ; same file
+           (loop for rank in (enclosed-by rank1 rank2)
+              thereis (takenp file1 rank)))
+          ((= rank1 rank2)          ; same rank
+           (loop for file in (enclosed-by file1 file2)
+              thereis (takenp file rank1))))))
+
 (defun file->index (file-char)
   "Converts an algebraic chess notation file into an x-position"
   (cdr (assoc file-char
