@@ -3,37 +3,39 @@
 
 (in-package :knight-owl)
 
-(defconstant +rook-moves+
+(defgeneric piece-moves (piece-char whitep capturep final-rank)
+  (:documentation "Evaluates to a list of (file rank) scales"))
+
+(defmethod piece-moves ((piece-char (eql #\R)) whitep capturep final-rank)
+  "Provides all possible rook moves"
   '((0 1) (0 2) (0 3) (0 4) (0 5) (0 6) (0 7)
     (0 -1) (0 -2) (0 -3) (0 -4) (0 -5) (0 -6) (0 -7)
     (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0)
-    (-1 0) (-2 0) (-3 0) (-4 0) (-5 0) (-6 0) (-7 0))
-  "list of (file rank) scales for rooks")
+    (-1 0) (-2 0) (-3 0) (-4 0) (-5 0) (-6 0) (-7 0)))
 
-(defconstant +knight-moves+
+(defmethod piece-moves ((piece-char (eql #\N)) whitep capturep final-rank)
+  "Provides all possible knight moves"
   '((-1 -2) (1 -2) (-2 -1) (2 -1)
-    (-2 1) (2 1) (-1 2) (1 2))
-  "list of (file rank) scales for knights")
+    (-2 1) (2 1) (-1 2) (1 2)))
 
-(defconstant +bishop-moves+
+(defmethod piece-moves ((piece-char (eql #\B)) whitep capturep final-rank)
+  "Provides all possible bishop moves"
   '((-1 -1) (-2 -2) (-3 -3) (-4 -4) (-5 -5) (-6 -6) (-7 -7)
     (1 1) (2 2) (3 3) (4 4) (5 5) (6 6) (7 7)
     (1 -1) (2 -2) (3 -3) (4 -4) (5 -5) (6 -6) (7 -7)
-    (-1 1) (-2 2) (-3 3) (-4 4) (-5 5) (-6 6) (-7 7))
-  "list of (file rank) scales for bishops")
+    (-1 1) (-2 2) (-3 3) (-4 4) (-5 5) (-6 6) (-7 7)))
 
-(defconstant +queen-moves+
-  (append +rook-moves+ +bishop-moves+)
-  "list of (file rank) scales for queens")
+(defmethod piece-moves ((piece-char (eql #\Q)) whitep capturep final-rank)
+  "Provides all possible queen moves"
+  (append (piece-moves #\R whitep capturep final-rank)
+          (piece-moves #\B whitep capturep final-rank)))
 
-(defconstant +king-moves+
-  '((-1 -1) (0 -1) (1 -1) (1 0) (1 1) (0 1) (-1 1) (-1 0))
-  "list of (file rank) scales for kings")
+(defmethod piece-moves ((piece-char (eql #\K)) whitep capturep final-rank)
+  "Provides all possible king moves"
+  '((-1 -1) (0 -1) (1 -1) (1 0) (1 1) (0 1) (-1 1) (-1 0)))
 
-(defun pawn-moves (whitep capturep final-rank)
-  "Provides a list of (file rank) scales for pawns. Since a pawn's
-   potential moves depend on color and position, a function is
-   required."
+(defmethod piece-moves ((piece-char character) whitep capturep final-rank)
+  "Provides all possible pawn moves (fall through case)"
   ;; TODO en passant
   (if whitep
       (if capturep
@@ -46,4 +48,3 @@
           (if (= final-rank 3)
               '((0 -1) (0 -2))
               '((0 -1))))))
-
