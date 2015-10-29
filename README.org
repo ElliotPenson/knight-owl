@@ -3,7 +3,7 @@
 
 A chess engine in lisp
 
-* Move Notation
+** Move Notation
 
   For general moves, the first character (or lack thereof) indicates
   the piece: R for Rook, N for kNight, B for Bishop, Q for Queen, K
@@ -16,7 +16,7 @@ A chess engine in lisp
   check and the hash symbol checkmate. O-O and O-O-O label a kingside
   and queenside castling, respectively.
 
-** Context-Free Grammar
+*** Context-Free Grammar
 
    #+BEGIN_SRC
    <move>             ::= <castle>
