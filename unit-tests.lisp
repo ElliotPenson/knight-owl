@@ -17,7 +17,13 @@
   (is (= (file->index #\e) 4))
   (is (= (file->index #\f) 5))
   (is (= (file->index #\g) 6))
-  (is (= (file->index #\h) 7)))
+  (is (= (file->index #\h) 7))
+  (signals sb-kernel:case-failure
+    (file->index #\A))
+  (signals sb-kernel:case-failure
+    (file->index #\1))
+  (signals sb-kernel:case-failure
+    (file->index #\space)))
 
 (test rank->index
   (is (= (rank->index #\1) 7))
