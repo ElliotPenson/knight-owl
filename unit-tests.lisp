@@ -18,11 +18,11 @@
   (is (= (file->index #\f) 5))
   (is (= (file->index #\g) 6))
   (is (= (file->index #\h) 7))
-  (signals sb-kernel:case-failure
+  (signals type-error
     (file->index #\A))
-  (signals sb-kernel:case-failure
+  (signals type-error
     (file->index #\1))
-  (signals sb-kernel:case-failure
+  (signals type-error
     (file->index #\space)))
 
 (test rank->index
