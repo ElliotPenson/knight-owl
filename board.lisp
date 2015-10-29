@@ -67,20 +67,19 @@
 
 (defun file->index (file-char)
   "Converts an algebraic chess notation file into an x-position"
-  (cdr (assoc file-char
-              '((#\a . 0)
-                (#\b . 1)
-                (#\c . 2)
-                (#\d . 3)
-                (#\e . 4)
-                (#\f . 5)
-                (#\g . 6)
-                (#\h . 7)))))
+  (ecase file-char
+    (#\a 0) (#\b 1) (#\c 2) (#\d 3) (#\e 4) (#\f 5) (#\g 6) (#\h 7)))
 
 (defun rank->index (rank-char)
   "Converts an algebraic chess notation rank into a y-position"
-  (- +number-of-ranks+
-     (digit-char-p rank-char)))
+  (- +number-of-ranks+ (digit-char-p rank-char)))
+
+(defun piece-char->symbol (piece-char whitep)
+  "Evaluates to the symbol piece name (e.g. 'w-r) that represents the given
+   piece character (e.g. #\R)"
+  (cond ((member piece-char '(#\R #\N #\B #\Q #\K))
+         (intern (format nil "~:[B~;W~]-~a" whitep piece-char)))
+        (whitep 'w-p) (t 'b-p)))
 
 (defun piece-symbol->unicode (symbol)
   "Converts a symbol piece name (e.g. 'w-r) into a unicode string."
