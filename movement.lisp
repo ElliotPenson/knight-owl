@@ -48,3 +48,7 @@
           (if (= final-rank 3)
               '((0 -1) (0 -2))
               '((0 -1))))))
+
+(defun can-jump-p (piece-letter)
+  "Determines if a piece can move without concern for pieces on its path"
+  (char-equal piece-letter #\N))
