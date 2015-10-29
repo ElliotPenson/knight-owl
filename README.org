@@ -2,3 +2,34 @@
 #+AUTHOR: Elliot Penson
 
 A chess engine in lisp
+
+* Move Notation
+
+  For general moves, the first character (or lack thereof) indicates
+  the piece: R for Rook, N for kNight, B for Bishop, Q for Queen, K
+  for King, and the empty string for pawn. Optionally a file or rank
+  (or both) may be given after the piece letter to remove
+  ambiguity. An x comes next if the a capture takes place. The next
+  two characters always represent the destination file [a,z] and rank
+  [1,8]. If a pawn promotion takes place, a equals sign and
+  replacement piece letter are added. Lastly, a plus sign describes a
+  check and the hash symbol checkmate. O-O and O-O-O label a kingside
+  and queenside castling, respectively.
+
+** Context-Free Grammar
+
+   #+BEGIN_SRC
+   <move>             ::= <castle>
+                          | <piece><file>?<rank>?<capture>?<file>
+                            <rank><promotion>?<checking>?
+   <piece>            ::= R | N | B | Q | K | <empty string>
+   <empty string>     ::= ''
+   <file>             ::= [a-h]
+   <rank>             ::= [1-8]
+   <capture>          ::= x
+   <promotion>        ::= =<piece>
+   <checking>         ::= [#+]
+   <castle>           ::= <queenside castle> | <kingside castle>
+   <kingside castle>  ::= O-O
+   <queenside castle> ::= O-O-O
+   #+END_SRC
