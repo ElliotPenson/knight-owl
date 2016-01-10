@@ -98,6 +98,30 @@
               (char promotion 1))
             check))))
 
+(defun can-promote-p (piece rank whitep)
+  (let ((final-rank (if whitep 0 +number-of-ranks+)))
+    (and (char-equal piece #\P)
+         (= rank final-rank))))
+
+(defun valid-move-p (move board whitep)
+  "Determines if a move can be performed on a given board."
+  ;; TODO: castling, check/checkmate
+  (destructuring-bind (piece origin-rank origin-file capturep
+                             final-file final-rank promotion check)
+      (destructure-move move)
+    (declare (ignore check))
+    (let ((origin (move-origin final-file final-rank board piece
+                               whitep capturep
+                               :origin-file origin-file
+                               :origin-rank origin-rank))
+          (destination-square (get-square board final-file final-rank)))
+      (and origin
+           (if capturep
+               destination-square
+               (null destination-square))
+           (or (null promotion)
+               (can-promote-p piece final-rank whitep))))))
+
 (defun make-move (move board whitep)
   "Destructively modifies the board for the given move. The move parameter
    should be a string in algebraic chess notation."
@@ -113,6 +137,6 @@
             (if promotion
                 (piece-char->symbol promotion whitep)
                 (get-square board origin-file origin-rank))
-                (get-square board origin-file origin-rank)
-                nil)))
+            (get-square board origin-file origin-rank)
+            nil)))
   board)
