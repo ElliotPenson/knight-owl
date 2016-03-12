@@ -27,6 +27,15 @@
             (row-major-aref *initial-board* index)))
     board))
 
+(defun duplicate-board (board)
+  "Creates a new two-dimentional array identical to the input board"
+  (let ((new-board (make-array (list +number-of-files+
+                                     +number-of-ranks+))))
+    (dotimes (index (array-total-size board))
+      (setf (row-major-aref new-board index)
+            (row-major-aref board index)))
+    new-board))
+
 (defun get-square (board file rank)
   "Accesses a chessboard x/y location"
   (aref board rank file))
@@ -80,6 +89,16 @@
   (cond ((member piece-char '(#\R #\N #\B #\Q #\K))
          (intern (format nil "~:[B~;W~]-~a" whitep piece-char)))
         (whitep 'w-p) (t 'b-p)))
+
+(defun piece-location (piece-symbol board)
+  "Provides the first discovered (file rank) of the given piece. Evaluates
+   to nil if none can be found."
+  (dotimes (file +number-of-files+)
+    (dotimes (rank +number-of-ranks+)
+      (when (eql (get-square board file rank)
+                 piece-symbol)
+        (return-from piece-location
+          (list file rank))))))
 
 (defun piece-symbol->unicode (symbol)
   "Converts a symbol piece name (e.g. 'w-r) into a unicode string."
