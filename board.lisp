@@ -100,6 +100,12 @@
         (return-from piece-location
           (list file rank))))))
 
+(defun white-piece-p (piece-symbol)
+  (member piece-symbol '(w-p w-r w-n w-b w-q w-k)))
+
+(defun black-piece-p (piece-symbol)
+  (member piece-symbol '(b-p b-r b-n b-b b-q b-k)))
+
 (defun piece-symbol->unicode (symbol)
   "Converts a symbol piece name (e.g. 'w-r) into a unicode string."
   (case symbol
