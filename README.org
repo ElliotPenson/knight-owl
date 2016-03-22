@@ -1,7 +1,115 @@
 #+TITLE: Knight Owl
 #+AUTHOR: Elliot Penson
+#+OPTIONS: num:nil
 
-A chess engine in lisp
+A chess engine in lisp.
+
+** Documentation
+
+*** Board
+
+    In knight-owl, a chess board is stored as a two-dimensional array
+    of piece symbols in the form [bw]-[prnbqk]. For example, 'b-n
+    would indicate a black knight. Empty squares are denoted with nil.
+
+**** *~new-board~*
+
+     - Description: Evaluates to a fresh 2D array with the initial
+       chess position.
+
+**** *~duplicate-board~* ~board~
+
+     - Arguments:
+       - /board/
+         - A two-dimensional array of piece symbols.
+     - Description: Creates a new two-dimensional array identical to
+       the input board.
+
+**** *~print-board~* ~board &key stream~
+
+     - Arguments:
+       - /board/
+         - A two-dimensional array of piece symbols.
+       - /stream/
+         - An input stream designator. Defaults to ~t~.
+     - Description: Write a 2D chessboard array to a stream in a
+       pretty fashion.
+
+**** *~get-square~* ~board file rank~
+
+     - Arguments:
+       - /board/
+         - A two-dimensional array of piece symbols.
+       - /file/
+         - An integer.
+       - /rank/
+         - An integer.
+     - Description: Accesses a chess board x/y location. Note that
+       (setf get-square) also exists.
+
+*** Movement
+
+**** *~make-move~* ~move board whitep~
+
+     - Arguments:
+       - /move/
+         - A string chess action in standard algebraic notation.
+       - /board/
+         - A two-dimensional array of piece symbols.
+       - /whitep/
+         - A generalized boolean. Truth value for white, nil for
+           black.
+     - Description: Destructively modifies the board for the given
+       move.
+
+**** *~valid-move-p~* ~move board whitep~
+
+     - Arguments:
+       - /move/
+         - A string chess action in standard algebraic notation.
+       - /board/
+         - A two-dimensional array of piece symbols.
+       - /whitep/
+         - A generalized boolean. Truth value for white, nil for
+           black.
+     - Description: Determines if a move can be performed on a given
+       board.
+
+**** *~check-p~* ~board whitep~
+
+     - Arguments:
+       - /board/
+         - A two-dimensional array of piece symbols.
+       - /whitep/
+         - A generalized boolean. Truth value for white, nil for
+           black.
+     - Description: Determines if the king is being attacked.
+
+**** *~checkmate-p~* ~board whitep~
+
+     - Arguments:
+       - /board/
+         - A two-dimensional array of piece symbols.
+       - /whitep/
+         - A generalized boolean. Truth value for white, nil for
+           black.
+     - Description: Determines if the king is both being attacked and
+       cannot escape.
+
+**** *~+all-moves+~*
+
+     - Description: Constant that's defined as a list of all possible
+       string algebraic notation moves.
+
+*** Portable Game Notation
+
+**** *~pgn-parse~* ~stream~
+
+     - Arguments:
+       - /stream/
+         - An input stream designator
+     - Description: Parses a single chess game depicted in portable
+       game notation
 
 ** Move Notation
 
@@ -19,7 +127,7 @@ A chess engine in lisp
 *** Context-Free Grammar
 
    #+BEGIN_SRC
-   <move>             ::= <castle>
+   <move>             ::= <castle><checking>?
                           | <piece><file>?<rank>?<capture>?<file>
                             <rank><promotion>?<checking>?
    <piece>            ::= R | N | B | Q | K | <empty string>
