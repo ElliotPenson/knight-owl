@@ -1,7 +1,8 @@
 ;;;; packagedef.lisp
 ;;;; Author: Elliot Penson
 
-(ql:quickload "cl-ppcre")
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (ql:quickload "cl-ppcre"))
 
 (defpackage :knight-owl
   (:use :common-lisp :cl-ppcre)
