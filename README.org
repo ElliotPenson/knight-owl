@@ -1,8 +1,9 @@
-#+TITLE: Knight Owl
+#+TITLE: knight-owl
 #+AUTHOR: Elliot Penson
 #+OPTIONS: num:nil
 
-A chess engine in lisp.
+A chess library in lisp. Defines a data structure for a board,
+validates and performs moves, and reads portable game notation.
 
 ** Documentation
 
