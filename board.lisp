@@ -16,10 +16,10 @@
       (nil nil nil nil nil nil nil nil)
       (w-p w-p w-p w-p w-p w-p w-p w-p)
       (w-r w-n w-b w-q w-k w-b w-n w-r))
-  "Two-dimensional array of piece symbols in the form [bw]-[prnbqk]")
+  "Two-dimensional array of piece symbols in the form [bw]-[prnbqk].")
 
 (defun new-board ()
-  "Evaluates to a fresh 2D array with initial the chess position"
+  "Evaluate to a fresh 2D array with initial the chess position."
   (let ((board (make-array (list +number-of-files+
                                  +number-of-ranks+))))
     (dotimes (index (array-total-size board))
@@ -28,7 +28,7 @@
     board))
 
 (defun duplicate-board (board)
-  "Creates a new two-dimentional array identical to the input board"
+  "Create a new two-dimensional array identical to the input board."
   (let ((new-board (make-array (list +number-of-files+
                                      +number-of-ranks+))))
     (dotimes (index (array-total-size board))
@@ -37,29 +37,29 @@
     new-board))
 
 (defun get-square (board file rank)
-  "Accesses a chessboard x/y location"
+  "Access a chess board x/y location."
   (aref board rank file))
 
 (defun (setf get-square) (value board file rank)
-  "Sets a chessboard x/y location"
+  "Set a chess board x/y location."
   (setf (aref board rank file) value))
 
 (defun in-board-p (file rank)
-  "Determines if the given position is within the bounds of a chess board"
+  "Determine if the given position is within the bounds of a chess board."
   (and (not (minusp file))
        (not (minusp rank))
        (< file +number-of-files+)
        (< rank +number-of-ranks+)))
 
 (defun enclosed-by (start end)
-  "Produces a list of integers. Both start and end are exclusive"
+  "Produce a list of integers. Both start and end are exclusive."
   (let ((advance-fn (if (< start end) #'1+ #'1-)))
     (unless (= (funcall advance-fn start) end)
       (cons (funcall advance-fn start)
             (enclosed-by (funcall advance-fn start) end)))))
 
 (defun pieces-between-p (board file1 rank1 file2 rank2)
-  "Decides if there's a clear path from one position to the next"
+  "Decide if there's a clear path from one position to the next."
   (flet ((takenp (file rank)
            (get-square board file rank)))
     (cond ((= (abs (- file1 file2)) ; diagonal
@@ -75,24 +75,24 @@
               thereis (takenp file rank1))))))
 
 (defun file->index (file-char)
-  "Converts an algebraic chess notation file into an x-position"
+  "Convert an algebraic chess notation file into an x-position."
   (ecase file-char
     (#\a 0) (#\b 1) (#\c 2) (#\d 3) (#\e 4) (#\f 5) (#\g 6) (#\h 7)))
 
 (defun rank->index (rank-char)
-  "Converts an algebraic chess notation rank into a y-position"
+  "Convert an algebraic chess notation rank into a y-position."
   (- +number-of-ranks+ (digit-char-p rank-char)))
 
 (defun piece-char->symbol (piece-char whitep)
-  "Evaluates to the symbol piece name (e.g. 'w-r) that represents the given
-   piece character (e.g. #\R)"
+  "Evaluate to the symbol piece name (e.g. 'w-r) that represents the given
+   piece character (e.g. #\R)."
   (cond ((member piece-char '(#\R #\N #\B #\Q #\K))
          (intern (format nil "~:[B~;W~]-~a" whitep piece-char)))
         (whitep 'w-p) (t 'b-p)))
 
 (defun piece-location (piece-symbol board)
-  "Provides the first discovered (file rank) of the given piece. Evaluates
-   to nil if none can be found."
+  "Provide the first discovered (file rank) of the given piece. Evaluate
+   to nil if none can be found"
   (dotimes (file +number-of-files+)
     (dotimes (rank +number-of-ranks+)
       (when (eql (get-square board file rank)
@@ -107,7 +107,7 @@
   (member piece-symbol '(b-p b-r b-n b-b b-q b-k)))
 
 (defun piece-symbol->unicode (symbol)
-  "Converts a symbol piece name (e.g. 'w-r) into a unicode string."
+  "Convert a symbol piece name (e.g. 'w-r) into a unicode string."
   (case symbol
     (b-p #\BLACK_CHESS_PAWN)
     (b-r #\BLACK_CHESS_ROOK)
@@ -124,7 +124,7 @@
     (otherwise #\LOW_LINE)))
 
 (defun print-board (board &key (stream t))
-  "Write a 2D chessboard array to a stream in a pretty fashion"
+  "Write a 2D chess board array to a stream in a pretty fashion."
   (dotimes (rank +number-of-ranks+)
     (format stream "~a " (- +number-of-ranks+ rank))
     (dotimes (file +number-of-files+)

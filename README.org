@@ -12,30 +12,30 @@ A chess engine in lisp.
     of piece symbols in the form [bw]-[prnbqk]. For example, 'b-n
     would indicate a black knight. Empty squares are denoted with nil.
 
-**** *~new-board~*
+**** ~new-board~
 
-     - Description: Evaluates to a fresh 2D array with the initial
+     - Description: Evaluate to a fresh 2D array with initial the
        chess position.
 
-**** *~duplicate-board~* ~board~
+**** ~duplicate-board~ /board/
 
      - Arguments:
        - /board/
          - A two-dimensional array of piece symbols.
-     - Description: Creates a new two-dimensional array identical to
+     - Description: Create a new two-dimensional array identical to
        the input board.
 
-**** *~print-board~* ~board &key stream~
+**** ~print-board~ /board &key stream/
 
      - Arguments:
        - /board/
          - A two-dimensional array of piece symbols.
        - /stream/
          - An input stream designator. Defaults to ~t~.
-     - Description: Write a 2D chessboard array to a stream in a
+     - Description: Write a 2D chess board array to a stream in a
        pretty fashion.
 
-**** *~get-square~* ~board file rank~
+**** ~get-square~ /board file rank/
 
      - Arguments:
        - /board/
@@ -44,12 +44,12 @@ A chess engine in lisp.
          - An integer.
        - /rank/
          - An integer.
-     - Description: Accesses a chess board x/y location. Note that
-       (setf get-square) also exists.
+     - Description: Access a chess board x/y location. Note that (setf
+       get-square) also exists.
 
 *** Movement
 
-**** *~make-move~* ~move board whitep~
+**** ~make-move~ /move board whitep/
 
      - Arguments:
        - /move/
@@ -59,10 +59,9 @@ A chess engine in lisp.
        - /whitep/
          - A generalized boolean. Truth value for white, nil for
            black.
-     - Description: Destructively modifies the board for the given
-       move.
+     - Description: Destructively modify the board for the given move.
 
-**** *~valid-move-p~* ~move board whitep~
+**** ~valid-move-p~ /move board whitep/
 
      - Arguments:
        - /move/
@@ -72,10 +71,10 @@ A chess engine in lisp.
        - /whitep/
          - A generalized boolean. Truth value for white, nil for
            black.
-     - Description: Determines if a move can be performed on a given
-       board.
+     - Description: Determine if a move can legally be performed on a
+       given board.
 
-**** *~check-p~* ~board whitep~
+**** ~check-p~ /board whitep/
 
      - Arguments:
        - /board/
@@ -85,7 +84,7 @@ A chess engine in lisp.
            black.
      - Description: Determines if the king is being attacked.
 
-**** *~checkmate-p~* ~board whitep~
+**** ~checkmate-p~ /board whitep/
 
      - Arguments:
        - /board/
@@ -93,23 +92,23 @@ A chess engine in lisp.
        - /whitep/
          - A generalized boolean. Truth value for white, nil for
            black.
-     - Description: Determines if the king is both being attacked and
+     - Description: Determine if the king is both being attacked and
        cannot escape.
 
-**** *~+all-moves+~*
+**** ~+all-moves+~
 
      - Description: Constant that's defined as a list of all possible
        string algebraic notation moves.
 
 *** Portable Game Notation
 
-**** *~pgn-parse~* ~stream~
+**** ~pgn-parse~ /stream/
 
      - Arguments:
        - /stream/
          - An input stream designator
-     - Description: Parses a single chess game depicted in portable
-       game notation
+     - Description: Parse a single chess game depicted in portable
+       game notation.
 
 ** Move Notation
 
