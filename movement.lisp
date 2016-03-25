@@ -8,6 +8,9 @@
   "A regular expression that describes chess movement in standard
    algebraic notation")
 
+(defconstant +algebraic-castle-re+
+  "[0O]-[0O](-[0O])?([#+])?")
+
 (defconstant +piece-chars+ '(#\R #\N #\B #\Q #\K #\P))
 
 (defconstant +all-moves+
@@ -21,8 +24,9 @@
                              capture-sign files ranks check-sign)
                     (product files ranks capture-sign
                              '("" "=R" "=N" "=B" "=Q" "=K")
-                             check-sign)))))
-                 ;; (product '("0-0" "0-0-0") check-sign)
+                             check-sign)
+                    (product '("0-0" "0-0-0") check-sign))))
+  "A list of all possible string algebraic notation moves.")
 
 (defun product (&rest lists)
   "Calculates the Cartesian product of the input lists."
@@ -161,10 +165,25 @@
              (and (string= check-sign "#")
                   (checkmate-p future-board (not whitep)))))))
 
-(defun valid-move-p (move board whitep)
-  "Determines if a move can be performed on a given board."
+(defun valid-castle-move-p (move board whitep)
+  "Determines if the given castling move (0-0, 0-0-0, 0-0+, etc) is legal."
+  (register-groups-bind (queensidep check)
+      (+algebraic-castle-re+ move)
+    (let ((rank (if whitep 7 0))
+          (king-piece (if whitep 'w-k 'b-k))
+          (rook-piece (if whitep 'w-r 'b-r))
+          (initial-king-file 4)
+          (initial-rook-file (if queensidep 0 7)))
+      (and (eq (get-square board initial-king-file rank) king-piece)
+           (eq (get-square board initial-rook-file rank) rook-piece)
+           (not (pieces-between-p board initial-king-file rank
+                                  initial-rook-file rank))
+           (valid-check-sign-p check move board whitep)))))
+
+(defun valid-single-piece-move-p (move board whitep)
+  "Determines if the shift of one chess piece is legal on the given board."
   (when (destructure-move move)
-    (destructuring-bind (piece origin-rank origin-file capturep
+    (destructuring-bind (piece origin-file origin-rank capturep
                                final-file final-rank promotion check)
         (destructure-move move)
       (let ((origin (move-origin final-file final-rank board piece
@@ -172,7 +191,7 @@
                                  :origin-file origin-file
                                  :origin-rank origin-rank))
             (destination-square (get-square board final-file final-rank)))
-        (and origin
+        (and origin ; i.e. a piece exists in the right location
              (if capturep
                  (if whitep
                      (black-piece-p destination-square)
@@ -181,6 +200,12 @@
              (or (null promotion)
                  (can-promote-p piece final-rank whitep))
              (valid-check-sign-p check move board whitep))))))
+
+(defun valid-move-p (move board whitep)
+  "Determines if a move can legally be performed on a given board."
+  (if (castling-move-p move)
+      (valid-castle-move-p move board whitep)
+      (valid-single-piece-move-p move board whitep)))
 
 (defun move-from-to (board initial-file initial-rank final-file final-rank
                      &key new-piece)
@@ -193,11 +218,44 @@
         (get-square board initial-file initial-rank)
         nil))
 
-(defun make-move (move board whitep)
-  "Destructively modifies the board for the given move. The move parameter
-   should be a string in algebraic chess notation. PRECONDITION: The move is
-   valid on the given board."
-  (destructuring-bind (piece origin-rank origin-file capturep
+(defun castling-move-p (move)
+  "Determines if a action in algebraic chess notation represents a castle
+   or a simple, single piece move."
+  (char= (char move 0) #\0))
+
+(defun queenside-castle (board whitep)
+  "Destructively modifies the board to apply a queenside castle. The whitep
+   parameter indicates which player is performing the move."
+  (let ((rank (if whitep 7 0))
+        (initial-king-file 4) (initial-rook-file 0)
+        (final-king-file 2) (final-rook-file 3))
+    (move-from-to board initial-king-file rank final-king-file rank)
+    (move-from-to board initial-rook-file rank final-rook-file rank)))
+
+(defun kingside-castle (board whitep)
+  "Destructively modifies the board to apply a kingside castle. The whitep
+   parameter indicates which player is performing the move."
+  (let ((rank (if whitep 7 0))
+        (initial-king-file 4) (initial-rook-file 7)
+        (final-king-file 6) (final-rook-file 5))
+    (move-from-to board initial-king-file rank final-king-file rank)
+    (move-from-to board initial-rook-file rank final-rook-file rank)))
+
+(defun make-castle-move (move board whitep)
+  "Simultaneously moves the king and a rook, switching their sides. The
+   move parameter must represent a castle (0-0, 0-0-0, 0-0+, etc)."
+  (register-groups-bind (queensidep check)
+      (+algebraic-castle-re+ move)
+    (declare (ignore check))
+    (if queensidep
+        (queenside-castle board whitep)
+        (kingside-castle board whitep)))
+  board)
+
+(defun make-one-piece-move (move board whitep)
+  "Destructively shifts one piece on a board. The move parameter must
+   represent the movement of a single piece (e.g. e4, Qxd5)."
+  (destructuring-bind (piece origin-file origin-rank capturep
                              final-file final-rank promotion check)
       (destructure-move move)
     (declare (ignore check))
@@ -208,3 +266,11 @@
                     :new-piece (when promotion
                                  (piece-char->symbol promotion whitep)))))
   board)
+
+(defun make-move (move board whitep)
+  "Destructively modifies the board for the given move. The move parameter
+   should be a string in algebraic chess notation. PRECONDITION: The move is
+   valid on the given board."
+  (if (castling-move-p move)
+      (make-castle-move move board whitep)
+      (make-one-piece--move move board whitep)))
