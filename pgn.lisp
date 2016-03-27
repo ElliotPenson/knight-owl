@@ -51,5 +51,6 @@
 
 (defun pgn-parse (stream)
   "Parse a single chess game depicted in portable game notation."
-  (list (tag-parse stream)
-        (movetext-parse stream)))
+  (when (peek-char t stream nil nil)
+    (list (tag-parse stream)
+          (movetext-parse stream))))
