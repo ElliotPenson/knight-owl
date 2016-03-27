@@ -20,12 +20,7 @@
 
 (defun new-board ()
   "Evaluate to a fresh 2D array with initial the chess position."
-  (let ((board (make-array (list +number-of-files+
-                                 +number-of-ranks+))))
-    (dotimes (index (array-total-size board))
-      (setf (row-major-aref board index)
-            (row-major-aref *initial-board* index)))
-    board))
+  (duplicate-board *initial-board*))
 
 (defun duplicate-board (board)
   "Create a new two-dimensional array identical to the input board."
@@ -86,9 +81,10 @@
 (defun piece-char->symbol (piece-char whitep)
   "Evaluate to the symbol piece name (e.g. 'w-r) that represents the given
    piece character (e.g. #\R)."
-  (cond ((member piece-char '(#\R #\N #\B #\Q #\K))
-         (intern (format nil "~:[B~;W~]-~a" whitep piece-char)))
-        (whitep 'w-p) (t 'b-p)))
+  (intern (cond ((member piece-char '(#\R #\N #\B #\Q #\K))
+                 (format nil "~:[B~;W~]-~a" whitep piece-char))
+                (whitep "W-P") (t "B-P"))
+          (find-package :knight-owl)))
 
 (defun piece-location (piece-symbol board)
   "Provide the first discovered (file rank) of the given piece. Evaluate
