@@ -14,6 +14,15 @@
 
 (defconstant +piece-chars+ '(#\R #\N #\B #\Q #\K #\P))
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun product (&rest lists)
+    "Calculate the Cartesian product of the input lists."
+    (when lists
+      (loop for head in (first lists)
+         for tails = (apply #'product (rest lists))
+         if tails append (mapcar (lambda (tail) (cons head tail)) tails)
+         else collect (list head)))))
+
 (defconstant +all-moves+
   (let ((files '("a" "b" "c" "d" "e" "f" "g" "h"))
         (ranks '("1" "2" "3" "4" "5" "6" "7" "8"))
@@ -28,14 +37,6 @@
                              check-sign)
                     (product '("0-0" "0-0-0") check-sign))))
   "A list of all possible string algebraic notation moves.")
-
-(defun product (&rest lists)
-  "Calculate the Cartesian product of the input lists."
-  (when lists
-    (loop for head in (first lists)
-       for tails = (apply #'product (rest lists))
-       if tails append (mapcar (lambda (tail) (cons head tail)) tails)
-       else collect (list head))))
 
 (defgeneric piece-moves (piece-char whitep capturep final-rank)
   (:documentation "Evaluate to a list of (file rank) scales."))
