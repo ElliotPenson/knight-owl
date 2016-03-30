@@ -72,7 +72,8 @@
 (defun file->index (file-char)
   "Convert an algebraic chess notation file into an x-position."
   (ecase file-char
-    (#\a 0) (#\b 1) (#\c 2) (#\d 3) (#\e 4) (#\f 5) (#\g 6) (#\h 7)))
+    ((#\a #\A) 0) ((#\b #\B) 1) ((#\c #\C) 2) ((#\d #\D) 3)
+    ((#\e #\E) 4) ((#\f #\F) 5) ((#\g #\G) 6) ((#\h #\H) 7)))
 
 (defun rank->index (rank-char)
   "Convert an algebraic chess notation rank into a y-position."
